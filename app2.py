@@ -109,23 +109,19 @@ def view_contact(contact_id):
     address = contact.address
     org = contact.org
 
-    # Crear el archivo vCard dinámicamente
+    # Generar vCard
     vcard = f"""BEGIN:VCARD
-    VERSION:3.0
-    N:{apellido2};{nombre2};{apellido1};{nombre1}
-    FN:{nombre1} {nombre2} {apellido1} {apellido2}
-    TEL;TYPE=WORK,VOICE:{phone}
-    EMAIL:{email}
-    ORG:{org}
-    ADR;TYPE=work:;;{address};;;;
-    END:VCARD"""
+VERSION:3.0
+N:{apellido2};{nombre2};{apellido1};{nombre1}
+FN:{nombre1} {nombre2} {apellido1} {apellido2}
+TEL;TYPE=WORK,VOICE:{phone}
+EMAIL:{email}
+ORG:{org}
+ADR;TYPE=work:;;{address};;;;
+END:VCARD"""
 
-    # Crear la respuesta con el archivo vCard
-    response = make_response(vcard)
-    response.headers["Content-Disposition"] = f"attachment; filename={nombre1}_{apellido1}.vcf"
-    response.headers["Content-Type"] = "text/vcard"
-
-    return response
+    # Mostrar la información del contacto en la página
+    return render_template('contact_info.html', contact=contact, vcard=vcard)
 
 if __name__ == '__main__':
     app.run(debug=True)

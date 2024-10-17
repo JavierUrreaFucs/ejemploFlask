@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información de Contacto</title>
+</head>
+<body>
+    <h1>Información de Contacto</h1>
+
+    <p><strong>Nombre:</strong> {{ contact.nombre1 }} {{ contact.nombre2 }} {{ contact.apellido1 }} {{ contact.apellido2 }}</p>
+    <p><strong>Teléfono:</strong> {{ contact.phone }}</p>
+    <p><strong>Email:</strong> {{ contact.email }}</p>
+    <p><strong>Dirección:</strong> {{ contact.address }}</p>
+    <p><strong>Organización:</strong> {{ contact.org }}</p>
+
+    <!-- Mostrar el vCard en la página -->
+    <pre>{{ vcard }}</pre>
+
+    <!-- Botón para descargar el archivo vCard -->
+    <a href="data:text/vcard;charset=utf-8,{{ vcard }}" download="{{ contact.nombre1 }}_{{ contact.apellido1 }}.vcf">Descargar vCard</a>
+
+</body>
+</html>

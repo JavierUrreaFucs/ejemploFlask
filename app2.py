@@ -1,17 +1,32 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, make_response
+from flask_sqlalchemy import SQLAlchemy
 import qrcode
 from io import BytesIO
-from flask_mysqldb import MySQL
+#from flask_mysqldb import MySQL
+
+import os
 
 app = Flask(__name__)
 
-# Configuración de la base de datos MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'contact_db'
+# Obtén la URL de la base de datos desde la variable de entorno
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
-mysql = MySQL(app)
+# Inicializa la base de datos
+db = SQLAlchemy(app)
+
+# Define tus modelos aquí
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+# Crear las tablas en la base de datos
+with app.app_context():
+    db.create_all()
+
 
 @app.route('/')
 def index():

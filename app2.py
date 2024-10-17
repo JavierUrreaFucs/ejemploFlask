@@ -119,12 +119,20 @@ def view_contact(contact_id):
     #cursor.execute("SELECT nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status FROM contacts WHERE id = %s", [contact_id])
     #contact = cursor.fetchone()
     #cursor.close()
-    contact = User.query.filter_by(id=contact_id).first()
+    contact = User.query.get(contact_id)
 
     if contact is None:
         return "Contacto no encontrado", 404
 
-    nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status = contact
+    nombre1 = contact.nombre1
+    nombre2 = contact.nombre2
+    apellido1 = contact.apellido1
+    apellido2 = contact.apellido2
+    phone = contact.phone
+    email = contact.email
+    address = contact.address
+    org = contact.org
+    status = contact.status
 
     # Verificar si el contacto está activo
     if status != 'active':

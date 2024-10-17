@@ -1,0 +1,180 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1; /* Esto permite que el contenido crezca y ocupe el espacio disponible */
+  padding: 15px;
+  background-color: #F0F0F0;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.help-icon {
+  cursor: pointer;
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 1.2em;
+  color: #007bff;
+}
+
+.ul-califica {
+  list-style: none;
+}
+
+.ul-califica li {
+  padding: 5px 0px;
+}
+
+.modal {
+  --bs-modal-width: 700px !important;
+}
+
+/* Navbar */
+
+.d-flex {
+  display: flex;
+  height: 100%;
+}
+
+#sidebarMenu {
+  position: fixed;
+  width: 15%;
+  background-color: #0A2655;
+  height: 100%;
+  z-index: 2;
+}
+
+.list-group-item {
+  border: none;
+}
+
+.dropdown-menu {
+  position: relative;
+  display: none;
+  margin-top: 0;
+}
+
+.menu-bg{
+  background-color: #0A2655;
+  color: #F0F0F0;
+}
+
+.navbar-toggler {
+  background-color: #FAD785 !important;
+}
+
+.list-group-item-action:hover + .dropdown-menu, 
+.dropdown-menu:hover {
+  display: block;
+}
+
+.dropdown-menu {
+  left: 100%;
+  top: 0;
+  margin-left: -1px;
+  border-radius: 0.25rem;
+}
+
+.full-height {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.text-nav {
+  font-size: 16px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.text-nav:hover {
+  color: #FAD785;
+}
+
+/* end Navbar */
+
+/* main */
+.container-fluid {
+  --bs-gutter-x: 0 !important;
+}
+/* end main */
+
+.main-div{
+  height: 100vh;
+}
+
+/* footer */
+footer {
+  background: #000000;
+  color: #F0F0F0;
+  text-align: center;
+  padding: 10px;
+  bottom: 0;
+  width: 100%;
+}
+/* end footer */
+
+/* tables */
+.th-font {
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+/* end tables */
+
+/* Login y recuperación contraseña */
+.body-recuperacion {
+  height: 100%;
+}
+/* end login */
+
+@media screen and (min-width: 768px) {
+
+  main {
+    margin-left: 15%;
+    width: 85%;
+  }
+
+  .container-desktop {
+    margin-left: 15%;
+    width: 85%;
+  }
+
+  .layaout-user {
+    height: 100% !important;
+  }
+
+  .nombre-usuario {
+    color: #0A2655;
+  }
+
+  .main-div{
+    height: 100vh;
+  }
+
+  .menu-bg{
+    background-color: #FFFFFF;
+    color: #0A2655;
+    padding: 0px;
+  }
+
+  .menu-bg-drop{
+    background-color: #FFFFFF;
+    color: #0A2655;
+  }
+
+  footer {
+    width: 85%;
+    margin-left: 15%;
+  }
+}

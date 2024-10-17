@@ -4,10 +4,13 @@ import qrcode
 from io import BytesIO
 
 app = Flask(__name__)
+
+# Configuración de la base de datos PostgreSQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://contact_db_uicb_user:6Nf9WYZDrfH6ot5014l9e3CRu8YCf6ZO@dpg-cs8i9idsvqrc73bs3s1g-a.oregon-postgres.render.com/contact_db_uicb'
 
 db = SQLAlchemy(app)
 
+# Define tus modelos aquí
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre1 = db.Column(db.String(80), nullable=False)
@@ -20,7 +23,10 @@ class User(db.Model):
     org = db.Column(db.String(100), nullable=True)
     status = db.Column(db.String(20), nullable=False)
 
-# Crear las tablas si no existen
+    def __repr__(self):
+        return f'<User {self.nombre1} {self.apellido1}>'
+
+# Crear las tablas en la base de datos
 with app.app_context():
     db.create_all()
 
@@ -28,12 +34,41 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
+@app.route('/add_contact', methods=['POST'])
+def add_contact():
+    if request.method == 'POST':
+        nombre1 = request.form['nombre1']
+        nombre2 = request.form['nombre2']
+        apellido1 = request.form['apellido1']
+        apellido2 = request.form['apellido2']
+        phone = request.form['phone']
+        email = request.form['email']
+        address = request.form['address']
+        org = request.form['org']
+
+        new_contact = User(
+            nombre1=nombre1,
+            nombre2=nombre2,
+            apellido1=apellido1,
+            apellido2=apellido2,
+            phone=phone,
+            email=email,
+            address=address,
+            org=org,
+            status='active'
+        )
+
+        db.session.add(new_contact)
+        db.session.commit()
+
+        return redirect(url_for('generate_qr', contact_id=new_contact.id))
+
 @app.route('/generate_qr/<int:contact_id>')
 def generate_qr(contact_id):
     # Generar la URL que será codificada en el QR
     url_contacto = url_for('view_contact', contact_id=contact_id, _external=True)
 
-    # Generar el código QR con la URL
+    # Generar el código QR con la URL del vCard
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -57,27 +92,37 @@ def generate_qr(contact_id):
 def view_contact(contact_id):
     contact = User.query.get(contact_id)
 
-    # Verificar si el contacto existe y está activo
     if contact is None or contact.status != 'active':
-        return "El contacto no está disponible.", 403
+        return "El contacto ya no está disponible.", 403
+
+    nombre1 = contact.nombre1
+    nombre2 = contact.nombre2
+    apellido1 = contact.apellido1
+    apellido2 = contact.apellido2
+    phone = contact.phone
+    email = contact.email
+    address = contact.address
+    org = contact.org
 
     # Generar vCard
     vcard = f"""BEGIN:VCARD
 VERSION:3.0
-N:{contact.apellido2};{contact.nombre2};{contact.apellido1};{contact.nombre1}
-FN:{contact.nombre1} {contact.nombre2} {contact.apellido1} {contact.apellido2}
-TEL;TYPE=WORK,VOICE:{contact.phone}
-EMAIL:{contact.email}
-ORG:{contact.org}
-ADR;TYPE=work:;;{contact.address};;;;
+N:{apellido2};{nombre2};{apellido1};{nombre1}
+FN:{nombre1} {nombre2} {apellido1} {apellido2}
+TEL;TYPE=WORK,VOICE:{phone}
+EMAIL:{email}
+ORG:{org}
+ADR;TYPE=work:;;{address};;;;
 END:VCARD"""
 
     # Crear la respuesta para el archivo vCard
     response = make_response(vcard)
-    response.headers["Content-Disposition"] = f"attachment; filename={contact.nombre1}_{contact.apellido1}.vcf"
+    response.headers["Content-Disposition"] = f"attachment; filename={nombre1}_{apellido1}.vcf"
     response.headers["Content-Type"] = "text/vcard"
 
+    # Mostrar la información del contacto en la página
     return response
+
 
 if __name__ == '__main__':
     app.run(debug=True)

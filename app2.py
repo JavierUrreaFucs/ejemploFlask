@@ -4,9 +4,15 @@ import qrcode
 from io import BytesIO
 #from flask_mysqldb import MySQL
 
-import os
-
 app = Flask(__name__)
+
+# Configuración de la base de datos MySQL
+#app.config['MYSQL_HOST'] = 'localhost'
+#app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = ''
+#app.config['MYSQL_DB'] = 'contact_db'
+#
+#mysql = MySQL(app)
 
 # Obtén la URL de la base de datos desde la variable de entorno
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://contact_db_uicb_user:6Nf9WYZDrfH6ot5014l9e3CRu8YCf6ZO@dpg-cs8i9idsvqrc73bs3s1g-a.oregon-postgres.render.com/contact_db_uicb'
@@ -17,11 +23,18 @@ db = SQLAlchemy(app)
 # Define tus modelos aquí
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    nombre1 = db.Column(db.String(80), nullable=False)
+    nombre2 = db.Column(db.String(80), nullable=False)
+    apellido1 = db.Column(db.String(80), nullable=False)
+    apellido2 = db.Column(db.String(80), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    address = db.Column(db.String(200), nullable=True)
+    org = db.Column(db.String(100), nullable=True)
+    status = db.Column(db.String(20), nullable=False)
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.nombre1} {self.apellido1}>'
 
 # Crear las tablas en la base de datos
 with app.app_context():
@@ -45,16 +58,34 @@ def add_contact():
         org = request.form['org']
 
         # Insertar los datos en la base de datos con el status 'active'
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            INSERT INTO contacts (nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'active')
-        """, (nombre1, nombre2, apellido1, apellido2, phone, email, address, org))
-        mysql.connection.commit()
-        contact_id = cursor.lastrowid
-        cursor.close()
+        #cursor = mysql.connection.cursor()
+        #cursor.execute("""
+        #    INSERT INTO contacts (nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status)
+        #    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'active')
+        #""", (nombre1, nombre2, apellido1, apellido2, phone, email, address, org))
+        #mysql.connection.commit()
+        #contact_id = cursor.lastrowid
+        #cursor.close()
+        #return redirect(url_for('generate_qr', contact_id=contact_id))
 
-        return redirect(url_for('generate_qr', contact_id=contact_id))
+        # Crear un nuevo usuario usando el modelo
+        new_contact = User(
+            nombre1=nombre1,
+            nombre2=nombre2,
+            apellido1=apellido1,
+            apellido2=apellido2,
+            phone=phone,
+            email=email,
+            address=address,
+            org=org,
+            status='active'
+        )
+
+        # Agregar a la base de datos
+        db.session.add(new_contact)
+        db.session.commit()
+
+        return redirect(url_for('generate_qr', contact_id=new_contact.id))
 
 @app.route('/generate_qr/<int:contact_id>')
 def generate_qr(contact_id):
@@ -84,10 +115,11 @@ def generate_qr(contact_id):
 @app.route('/contact_info/<int:contact_id>')
 def view_contact(contact_id):
     # Recuperar los datos del contacto desde la base de datos, incluyendo el status
-    cursor = mysql.connection.cursor()
-    cursor.execute("SELECT nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status FROM contacts WHERE id = %s", [contact_id])
-    contact = cursor.fetchone()
-    cursor.close()
+    #cursor = mysql.connection.cursor()
+    #cursor.execute("SELECT nombre1, nombre2, apellido1, apellido2, phone, email, address, org, status FROM contacts WHERE id = %s", [contact_id])
+    #contact = cursor.fetchone()
+    #cursor.close()
+    contact = User.query.filter_by(id=contact_id).first()
 
     if contact is None:
         return "Contacto no encontrado", 404

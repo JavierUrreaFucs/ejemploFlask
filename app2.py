@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 
 # Obtén la URL de la base de datos desde la variable de entorno
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://contact_db_uicb_user:6Nf9WYZDrfH6ot5014l9e3CRu8YCf6ZO@dpg-cs8i9idsvqrc73bs3s1g-a.oregon-postgres.render.com/contact_db_uicb'
 
 # Inicializa la base de datos
 db = SQLAlchemy(app)
